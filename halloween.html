@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Halloween Litche</title>
+</head>
+
+<body onLoad="init()">
+<canvas id="game" width="640" height="480" onMouseDown="mouseDown(event)" onMouseMove="mouseMove(event)" onMouseUp="mouseUp(event)">No Canvas Support</canvas>
+<p>
+</p>
+
+<script src="halloween.js"></script>
+<script>
+var cwg;
+var game;
+var isMouseDown = false;
+
+function draw() 
+{
+	var canvas = document.getElementById('game');
+	if ( ! canvas.getContext)
+		return;
+	var ctx = canvas.getContext('2d');
+	
+	game.render(ctx);
+}
+
+function canvasMouseCoordsFromEvent(event)
+{
+	var canvas = document.getElementById('game');
+
+	var ox = event.offsetX;
+	if (ox == undefined)
+		ox = event.pageX-canvas.offsetLeft;
+	var oy = event.offsetY;
+	if (oy == undefined)
+		oy = event.pageY-canvas.offsetTop;
+	return new Point(ox, oy);	
+}
+
+
+function mouseDown(event)
+{
+	if ( !game ) return;
+	isMouseDown = true;
+	var p = canvasMouseCoordsFromEvent(event);
+	if (game.mouseDown(p.x, p.y))
+		draw();
+}
+
+function mouseMove(event)
+{
+	if ( !game ) return;
+
+	var p = canvasMouseCoordsFromEvent(event);
+	if (game.mouseMove(p.x, p.y))
+		draw();
+}
+
+function mouseUp(event)
+{
+	if ( !game ) return;
+	isMouseDown = false;
+	var p = canvasMouseCoordsFromEvent(event);
+	if (game.mouseUp(p.x, p.y))
+		draw();
+}
+
+function startNewGame()
+{
+	draw();
+}
+
+function tick(timestamp) 
+{
+	game.tick(timestamp);
+	draw();
+	window.requestAnimationFrame(tick);
+}
+
+function init()
+{
+	game = new Game();
+	startNewGame();
+	window.requestAnimationFrame(tick);
+}
+
+</script>
+
+</body>
+</html>
